@@ -37,6 +37,7 @@ head(acs_2022)
 #| echo: false
 #| warning: false
 #| message: false
+#| label: ttl
 #| tbl-cap: "Number of Respondents and Proportion of Doctors Per State"
 
 # table, stateicp, number of doctors
@@ -62,6 +63,7 @@ doctor_prop_table %>% kable(col.names =
 #| echo: false
 #| warning: false
 #| message: false
+#| label: est
 #| tbl-cap: "Esimated Number of Respondents Per State"
 
 # california is 71# 391,171 from table and from the quercus directions
@@ -104,7 +106,7 @@ number_of_respondents_estimate %>%
 
 ```
 
-Based on the @tbl-diff
+Based on the @tbl-diff, the estimator is usually less than the actual. This is probably the case because California is more educated compared to most American states. Thus, they will have a higher percentage of doctors, resulting in an underestimate of the total number of respondents.
 
 
 
