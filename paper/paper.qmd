@@ -1,0 +1,13 @@
+---
+title: "Analysis of ACS 2022"
+author: 
+  - Lexun Yu
+  - Colin Sihan Yang
+  - Siddharth Gowda
+date: today
+date-format: long
+abstract: "This document provide instructions on downloading 2022 ACS data, a brief overview of the ratio estimators approach, estimates and the actual number of respondents and our explanation of why we think they are different."
+format: pdf
+number-sections: true
+bibliography: references.bib
+---
