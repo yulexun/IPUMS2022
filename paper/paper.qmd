@@ -15,26 +15,22 @@ number-sections: true
 
 library(tidyverse)
 library(janitor)
+library(knitr)
 ```
 
 
-# Raw Data
 
 ```{r}
+#| include: false
+#| warning: false
+#| message: false
 
 acs_2022 <- read_csv("../data/raw/usa_00001 3.csv") %>% clean_names()
+# head(us_yearly_survey)
 
 ```
 
 # Question 1
-
-```{r}
-head(us_yearly_survey)
-
-# based on codebook 116 is doctoral EDUCD
-
-
-```
 
 ## How many respondents were there in each state (STATEICP) that had a doctoral degree as their highest educational attainment (EDUC)?
 
@@ -50,7 +46,10 @@ doctor_prop_table <- us_yearly_survey %>%
             doctor_proportion = number_of_doctors / number_of_respondents)
 
 
-doctor_prop_table
+doctor_prop_table %>% kable(col.names = 
+                              c("State ICP", 
+                                "Respondent Count", 
+                                "Doctor Count", "Doctor Proportion"))
 
 ```
 
@@ -71,7 +70,9 @@ number_of_respondents_estimate <- state_doctors_count %>% mutate(
   estimate_respondent_count = round(number_of_doctors / california_doctor_prop)
 )
 
-number_of_respondents_estimate
+number_of_respondents_estimate %>% kable(col.names = 
+                                           c("State ICP", "Doctor Count", 
+                                             "Estimated Respondent Count"))
 
 
 ```
@@ -85,7 +86,10 @@ number_of_respondents_estimate %>%
   select(STATEICP, estimate_respondent_count) %>%
   inner_join(doctor_prop_table, by = "STATEICP") %>%
   select(STATEICP, estimate_respondent_count, number_of_respondents) %>% 
-  mutate(difference = estimate_respondent_count - number_of_respondents)
+  mutate(difference = estimate_respondent_count - number_of_respondents) %>% 
+  kable(col.names = c("State ICP", "Estimated Respondent Count", 
+                      "Respondent Count",
+                      "Difference"))
 
 ```
 
