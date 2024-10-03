@@ -4,6 +4,7 @@ author:
   - Lexun Yu
   - Colin Sihan Yang
   - Siddharth Gowda
+  - Tanmay Shinde
 date: today
 date-format: long
 abstract: "This document provide instructions on downloading 2022 ACS data, a brief overview of the ratio estimators approach, estimates and the actual number of respondents and our explanation of why we think they are different."
@@ -13,7 +14,7 @@ bibliography: references.bib
 ---
 
 # Introduction
-This paper is written with the help of R (@citeR).
+This paper is written with the help of R [@citeR]. All the data are gathered from IPUMS USA [@ipumsusa]. The code sections are done with the help of tidyverse [@tidyverse], janitor [@janitor] and knitr [@knitr].
 
 # Downloading Data
 We followed the steps below to download the data:
@@ -34,5 +35,91 @@ We followed the steps below to download the data:
 
 8. Submit extract, login and wait for the confirmation email.
 
+# Estimating the total numner of respondents
+
+The ratio estimator method is a technique used to estimate the population total of interest in one state by leveraging the relationship between two related variables in a reference group.
+
+In our case, we are given information about the number of respondents with doctoral degrees in each state, as shown in @tbl-ttl. We also know the total number of respondents in California (391,171). The ratio between the number of people with doctoral degrees and the total number of respondents in California can be used to estimate the total number of respondents in other state. 
+
+We follow these steps to estimate the total number of respondents in all states.
+
+1. The ratio in California is calculated as the number of people with doctoral degrees in California divided by the total number of respondents in California:
+$\text{Ratio in California} = \frac{\text{Doctoral Count in California}}{\text{Total Respondents in California}} = \frac{6336}{391171} \approx 0.0161975$.
+The result is displayed in "Doctor Proportion" on Line 71 in @tbl-ttl.
+
+2. We can then use this ratio to estimate the total number of respondents in other states. For any state x, the estimated total number of respondents is calculated by: 
+$\text{Estimated Total Respondents in State }x = \frac{\text{Doctoral Count in State }x}{\text{Ratio in California}}.$
+The result is shown in @tbl-est.
+
+The comparison between the estimated and actual data is displayed in @tbl-est.
+
+
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+library(cancensus)
+library(canlang)
+library(knitr)
+library(maps)
+library(tidycensus)
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(here)
+
+# ipumsdata <- read_csv(here("raw/usa_00001.csv"))
+```
+
+
+```{r}
+#| label: tbl-summary
+#| tbl-cap: Summary of number of doctorial degree holder by state
+#| echo: false
+
+# ipumsdata$STATEICP <- ipumsdata$STATEICP |> as.factor()
+# ipumsdata$EDUCD <- ipumsdata$EDUCD |> as.factor()
+
+# ipumsdatadoc <- ipumsdata |>
+#   select(
+#     STATEICP,
+#     EDUCD
+#   ) |>
+#     filter(EDUCD == "116")
+
+# doctoral_by_state <- ipumsdatadoc %>%
+#   group_by(STATEICP) %>%
+#   summarise(doctoral_count = n())
+
+# kable(doctoral_by_state)
+```
+
+The table of estimated total respondents by state is shown in @tbl-estimated-respondents.
+```{r}
+#| label: tbl-estimated-respondents
+#| tbl-cap: Estimated Total Respondents by State
+#| echo: false
+
+# doctoral_by_state_all <- ipumsdata %>%
+#   group_by(STATEICP) %>%
+#   summarise(count = n())
+
+# # Number of respondents with doctoral degrees and total respondents in California
+# california_doctoral_count <- 6336
+# california_total_respondents <- 391171
+
+# # Calculate the ratio for California
+# california_ratio <- california_doctoral_count / california_total_respondents
+
+# # Apply the ratio estimator to estimate total respondents in each state
+# estimated_total_respondents <- doctoral_by_state %>%
+#   mutate(estimated_total = doctoral_count / california_ratio, actual_total = doctoral_by_state_all$count)
+
+# # View the estimated total respondents for each state
+# kable(estimated_total_respondents)
+
+```
 
 # Bibliography
