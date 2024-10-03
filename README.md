@@ -17,4 +17,4 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
-Aspects of the code were written with the help of OpenAI's LLM GPT-4o. We have used the LLM as a tool to assist in understanding errors in `paper/paper.qmd`.
+No aspects of the code were written using any LLMs.
