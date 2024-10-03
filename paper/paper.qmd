@@ -1,0 +1,93 @@
+---
+title: "TODO"
+subtitle: "TODO"
+date: today
+date-format: long
+abstract: "TODO"
+format: pdf
+number-sections: true
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(janitor)
+```
+
+
+# Raw Data
+
+```{r}
+
+acs_2022 <- read_csv("../data/raw/usa_00001 3.csv") %>% clean_names()
+
+```
+
+# Question 1
+
+```{r}
+head(us_yearly_survey)
+
+# based on codebook 116 is doctoral EDUCD
+
+
+```
+
+## How many respondents were there in each state (STATEICP) that had a doctoral degree as their highest educational attainment (EDUC)?
+
+```{r}
+
+# table, stateICP, number of doctors
+
+doctor_prop_table <- us_yearly_survey %>% 
+  select(STATEICP, EDUCD) %>% filter(!is.na(STATEICP) & !is.na(EDUCD)) %>% 
+  group_by(STATEICP) %>% 
+  summarise(number_of_respondents = n(), 
+            number_of_doctors = sum(EDUCD == 116),
+            doctor_proportion = number_of_doctors / number_of_respondents)
+
+
+doctor_prop_table
+
+```
+
+## Laplace to estimator. Given 391,171 California Respondents use estimator to find number of participants for all states.
+
+```{r}
+
+# california is 71# 391,171 from table and from the quercus directions
+
+# reducing data for estimator question purposes
+cali_resp_count <- 391171
+state_doctors_count <- doctor_prop_table %>% select(STATEICP, number_of_doctors)
+
+california_doctor_prop <- as.numeric((state_doctors_count %>% filter(STATEICP == 71) %>% 
+  select(number_of_doctors)) / cali_resp_count)
+
+number_of_respondents_estimate <- state_doctors_count %>% mutate(
+  estimate_respondent_count = round(number_of_doctors / california_doctor_prop)
+)
+
+number_of_respondents_estimate
+
+
+```
+
+### Different between estimator and non estimator
+
+
+```{r}
+
+number_of_respondents_estimate %>% 
+  select(STATEICP, estimate_respondent_count) %>%
+  inner_join(doctor_prop_table, by = "STATEICP") %>%
+  select(STATEICP, estimate_respondent_count, number_of_respondents) %>% 
+  mutate(difference = estimate_respondent_count - number_of_respondents)
+
+```
+
+
+
