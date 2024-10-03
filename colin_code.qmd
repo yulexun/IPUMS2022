@@ -9,3 +9,58 @@ format: pdf
 toc: true
 number-sections: true
 ---
+
+```{r}
+library(tidyverse)
+library(here)
+library(dplyr)
+```
+
+# loading the data
+
+```{r}
+raw_data <- read_csv(here("usa_00001.csv"))
+head(raw_data)
+```
+
+
+```{r}
+dim(raw_data) 
+respondent_num = nrow(raw_data)
+doctor_num = raw_data %>%
+    filter(EDUCD==71) %>%
+    nrow()
+
+```
+
+```{r}
+doctor_ratio_in_respondent = doctor_num/ respondent_num
+num_of_respondent_in_cali = 391171
+estimate_USA_total_respondent <- doctor_num/doctor_ratio_in_respondent
+```
+
+# estimate the total respondent by state
+
+```{r}
+# raw_data |>
+#     select(EDUCD, STATEICP) |>
+#     group_by(STATEICP) |>
+#     summarise(doctor_count = sum(EDUCD==71, na.rm = TRUE),
+#     total_respondents = n(), doctor_ratio = doctor_count/total_respondents)
+
+data_group_by_state = raw_data |>
+    select(EDUCD, STATEICP) |>
+    group_by(STATEICP) |>
+    summarise(doctor_count = sum(EDUCD==71, na.rm = TRUE))
+
+
+
+
+# doctor_count/doctor_ratio_in_respondent
+
+```
+
+
+```{r}
+data_set = data_group_by_state |> mutate(estimate_respondent_by_cali = doctor_count/doctor_ratio_in_respondent)
+```
