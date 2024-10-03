@@ -1,10 +1,16 @@
 ---
-title: "Reflection exercise 4"
+title: "Analysis of ACS 2022"
+author: 
+  - Lexun Yu
+  - Colin Sihan Yang
+  - Siddharth Gowda
+  - Tanmay Shinde
 date: today
 date-format: long
+abstract: "This document provide instructions on downloading 2022 ACS data, a brief overview of the ratio estimators approach, estimates and the actual number of respondents and our explanation of why we think they are different."
 format: pdf
-number_sections: true
-toc: true
+number-sections: true
+bibliography: references.bib
 ---
 
 ```{r}
@@ -29,6 +35,46 @@ head(acs_2022)
 
 ```
 
+# Introduction
+This paper is written with the help of R [@citeR]. All the data are gathered from IPUMS USA [@ipumsusa]. The code sections are done with the help of tidyverse [@tidyverse], janitor [@janitor] and knitr [@knitr].
+
+# Downloading Data
+We followed the steps below to download the data:
+
+1. Visit IPUMS USA at: [https://usa.ipums.org/](https://usa.ipums.org/) 
+
+2. Click on "Get Data" under "Create Your Custom Data Set" 
+
+3. Use the filter in "Select Harmonized Variables" and select "Geographic" under "Household". Check the "STATEICP" checkbox. 
+
+4. Use the filter in "Select Harmonized Variables" and select "Demographic" under "Person". Check the "SEX" checkbox. 
+
+5. Use the filter in "Select Harmonized Variables" and select "Education" under "Person". Check the "EDUC" checkbox. 
+
+6. Select "Select Samples", check only "ACS" in 2022, and click "Submit Sample Selections"
+
+7. Click "View Cart" on the top of the page, click on "Create Data Extract". Change the data format to "Comma delimited (.csv)" and apply.
+
+8. Submit extract, login and wait for the confirmation email.
+
+# Estimating the total numner of respondents
+
+The ratio estimator method is a technique used to estimate the population total of interest in one state by leveraging the relationship between two related variables in a reference group.
+
+In our case, we are given information about the number of respondents with doctoral degrees in each state, as shown in @tbl-ttl. We also know the total number of respondents in California (391,171). The ratio between the number of people with doctoral degrees and the total number of respondents in California can be used to estimate the total number of respondents in other state. 
+
+We follow these steps to estimate the total number of respondents in all states.
+
+1. The ratio in California is calculated as the number of people with doctoral degrees in California divided by the total number of respondents in California:
+$\text{Ratio in California} = \frac{\text{Doctoral Count in California}}{\text{Total Respondents in California}} = \frac{6336}{391171} \approx 0.0161975$.
+The result is displayed in "Doctor Proportion" on Line 71 in @tbl-ttl.
+
+2. We can then use this ratio to estimate the total number of respondents in other states. For any state x, the estimated total number of respondents is calculated by: 
+$\text{Estimated Total Respondents in State }x = \frac{\text{Doctoral Count in State }x}{\text{Ratio in California}}.$
+The result is shown in @tbl-diff.
+
+The comparison between the estimated and actual data is displayed in @tbl-diff.
+
 # Question 1
 
 ## How many respondents were there in each state (stateicp) that had a doctoral degree as their highest educational attainment (EDUC)?
@@ -37,7 +83,7 @@ head(acs_2022)
 #| echo: false
 #| warning: false
 #| message: false
-#| label: ttl
+#| label: tbl-ttl
 #| tbl-cap: "Number of Respondents and Proportion of Doctors Per State"
 
 # table, stateicp, number of doctors
@@ -60,11 +106,9 @@ doctor_prop_table %>% kable(col.names =
 ## Laplace to estimator. Given 391,171 California Respondents use estimator to find number of participants for all states.
 
 ```{r}
-#| echo: false
+#| include: false
 #| warning: false
 #| message: false
-#| label: est
-#| tbl-cap: "Esimated Number of Respondents Per State"
 
 # california is 71# 391,171 from table and from the quercus directions
 
@@ -79,9 +123,7 @@ number_of_respondents_estimate <- state_doctors_count %>% mutate(
   estimate_respondent_count = round(number_of_doctors / california_doctor_prop)
 )
 
-number_of_respondents_estimate %>% kable(col.names = 
-                                           c("State ICP", "Doctor Count", 
-                                             "Estimated Respondent Count"))
+number_of_respondents_estimate
 
 
 ```
@@ -93,20 +135,23 @@ number_of_respondents_estimate %>% kable(col.names =
 #| echo: false
 #| warning: false
 #| message: false
-#| label: diff
+#| label: tbl-diff
 #| tbl-cap: "Esimated Number of Respondents Per State"
 number_of_respondents_estimate %>% 
   select(stateicp, estimate_respondent_count) %>%
   inner_join(doctor_prop_table, by = "stateicp") %>%
-  select(stateicp, estimate_respondent_count, number_of_respondents) %>% 
+  select(stateicp, number_of_doctors, estimate_respondent_count, number_of_respondents) %>% 
   mutate(difference = estimate_respondent_count - number_of_respondents) %>% 
-  kable(col.names = c("State ICP", "Estimated Respondent Count", 
+  kable(col.names = c("State ICP", "Number of Doctor", "Estimated Respondent Count", 
                       "Respondent Count",
                       "Difference"))
 
 ```
 
 Based on the @tbl-diff, the estimator is usually less than the actual. This is probably the case because California is more educated compared to most American states. Thus, they will have a higher percentage of doctors, resulting in an underestimate of the total number of respondents.
+
+
+# References
 
 
 
