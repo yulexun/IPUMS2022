@@ -11,3 +11,28 @@ format: pdf
 number-sections: true
 bibliography: references.bib
 ---
+
+# Introduction
+This paper is written with the help of R (@citeR).
+
+# Downloading Data
+We followed the steps below to download the data:
+
+1. Visit IPUMS USA at: [https://usa.ipums.org/](https://usa.ipums.org/) 
+
+2. Click on "Get Data" under "Create Your Custom Data Set" 
+
+3. Use the filter in "Select Harmonized Variables" and select "Geographic" under "Household". Check the "STATEICP" checkbox. 
+
+4. Use the filter in "Select Harmonized Variables" and select "Demographic" under "Person". Check the "SEX" checkbox. 
+
+5. Use the filter in "Select Harmonized Variables" and select "Education" under "Person". Check the "EDUC" checkbox. 
+
+6. Select "Select Samples", check only "ACS" in 2022, and click "Submit Sample Selections"
+
+7. Click "View Cart" on the top of the page, click on "Create Data Extract". Change the data format to "Comma delimited (.csv)" and apply.
+
+8. Submit extract, login and wait for the confirmation email.
+
+
+# Bibliography
