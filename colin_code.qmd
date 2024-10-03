@@ -1,0 +1,11 @@
+---
+title: "Toronto Shelter Analysis: A Deep Dive of  Shelter Total Decedents with Features in Real Life"
+author: 
+  - Colin Sihan Yang
+thanks: "Code and data are available at: https://github.com/hoodiexxx/deaths_shelter."
+date: today
+date-format: long
+format: pdf
+toc: true
+number-sections: true
+---
