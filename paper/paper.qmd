@@ -3,7 +3,8 @@ title: "Reflection exercise 4"
 date: today
 date-format: long
 format: pdf
-number-sections: true
+number_sections: true
+toc: true
 ---
 
 ```{r}
@@ -90,7 +91,8 @@ number_of_respondents_estimate %>% kable(col.names =
 #| echo: false
 #| warning: false
 #| message: false
-#| 
+#| label: diff
+#| tbl-cap: "Esimated Number of Respondents Per State"
 number_of_respondents_estimate %>% 
   select(stateicp, estimate_respondent_count) %>%
   inner_join(doctor_prop_table, by = "stateicp") %>%
@@ -101,6 +103,8 @@ number_of_respondents_estimate %>%
                       "Difference"))
 
 ```
+
+Based on the @tbl-diff
 
 
 
