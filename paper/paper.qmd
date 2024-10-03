@@ -1,9 +1,7 @@
 ---
-title: "TODO"
-subtitle: "TODO"
+title: "Reflection exercise 4"
 date: today
 date-format: long
-abstract: "TODO"
 format: pdf
 number-sections: true
 ---
@@ -26,23 +24,27 @@ library(knitr)
 #| message: false
 
 acs_2022 <- read_csv("../data/raw/usa_00001 3.csv") %>% clean_names()
-# head(us_yearly_survey)
+head(acs_2022)
 
 ```
 
 # Question 1
 
-## How many respondents were there in each state (STATEICP) that had a doctoral degree as their highest educational attainment (EDUC)?
+## How many respondents were there in each state (stateicp) that had a doctoral degree as their highest educational attainment (EDUC)?
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| tbl-cap: "Number of Respondents and Proportion of Doctors Per State"
 
-# table, stateICP, number of doctors
+# table, stateicp, number of doctors
 
-doctor_prop_table <- us_yearly_survey %>% 
-  select(STATEICP, EDUCD) %>% filter(!is.na(STATEICP) & !is.na(EDUCD)) %>% 
-  group_by(STATEICP) %>% 
+doctor_prop_table <- acs_2022 %>% 
+  select(stateicp, educd) %>% filter(!is.na(stateicp) & !is.na(educd)) %>% 
+  group_by(stateicp) %>% 
   summarise(number_of_respondents = n(), 
-            number_of_doctors = sum(EDUCD == 116),
+            number_of_doctors = sum(educd == 116),
             doctor_proportion = number_of_doctors / number_of_respondents)
 
 
@@ -56,14 +58,18 @@ doctor_prop_table %>% kable(col.names =
 ## Laplace to estimator. Given 391,171 California Respondents use estimator to find number of participants for all states.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| tbl-cap: "Esimated Number of Respondents Per State"
 
 # california is 71# 391,171 from table and from the quercus directions
 
 # reducing data for estimator question purposes
 cali_resp_count <- 391171
-state_doctors_count <- doctor_prop_table %>% select(STATEICP, number_of_doctors)
+state_doctors_count <- doctor_prop_table %>% select(stateicp, number_of_doctors)
 
-california_doctor_prop <- as.numeric((state_doctors_count %>% filter(STATEICP == 71) %>% 
+california_doctor_prop <- as.numeric((state_doctors_count %>% filter(stateicp == 71) %>% 
   select(number_of_doctors)) / cali_resp_count)
 
 number_of_respondents_estimate <- state_doctors_count %>% mutate(
@@ -81,11 +87,14 @@ number_of_respondents_estimate %>% kable(col.names =
 
 
 ```{r}
-
+#| echo: false
+#| warning: false
+#| message: false
+#| 
 number_of_respondents_estimate %>% 
-  select(STATEICP, estimate_respondent_count) %>%
-  inner_join(doctor_prop_table, by = "STATEICP") %>%
-  select(STATEICP, estimate_respondent_count, number_of_respondents) %>% 
+  select(stateicp, estimate_respondent_count) %>%
+  inner_join(doctor_prop_table, by = "stateicp") %>%
+  select(stateicp, estimate_respondent_count, number_of_respondents) %>% 
   mutate(difference = estimate_respondent_count - number_of_respondents) %>% 
   kable(col.names = c("State ICP", "Estimated Respondent Count", 
                       "Respondent Count",
