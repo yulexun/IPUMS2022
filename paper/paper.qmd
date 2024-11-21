@@ -17,6 +17,7 @@ bibliography: references.bib
 #| include: false
 #| warning: false
 #| message: false
+#| echo: false
 
 library(tidyverse)
 library(janitor)
@@ -30,7 +31,7 @@ library(knitr)
 #| warning: false
 #| message: false
 
-acs_2022 <- read_csv("../data/raw/usa_00001 3.csv") %>% clean_names()
+acs_2022 <- read_csv("../data/raw/usa_00001.csv") %>% clean_names()
 head(acs_2022)
 
 ```
@@ -93,7 +94,7 @@ doctor_prop_table <- acs_2022 %>%
   group_by(stateicp) %>% 
   summarise(number_of_respondents = n(), 
             number_of_doctors = sum(educd == 116),
-            doctor_proportion = number_of_doctors / number_of_respondents)
+            doctor_proportion = round(number_of_doctors / number_of_respondents, 3))
 
 
 doctor_prop_table %>% kable(col.names = 
